@@ -1,0 +1,21 @@
+Processo server STUD che un canale CNL tra se stesso e un server (che in realtà è un client) di verifica VRF.
+
+(1) STUD entra in ciclo e per ogni iterazione:
+  
+   (a) attende collegamento da VRF sulla porta 35192;
+   
+   (b) subito dopo aver effettuato la connessione con VRF, STUD invia su CNL il conteggio degli                   errori di ricezione verificatisi durante la verifica (vedi punto 2);
+  
+   (c) dopo aver inviato il conteggio degli errori il processo STUD riceve da VRF un carattere                    CH_TERM, seguito da:
+   
+   (d) una sequenza di caratteri SEQ (massimo 256 caratteri) e terminata da CH_TERM. La ricezione                 delle singole sequenze di caratteri può essere soggetta a cadute di connessione.
+   
+   (e) chiude il canale CNL.
+
+(2) Se durante la ricezione si verifica una caduta di connessione STUD deve chiudere CNL_RX e                  riprendere dal punto 1, incrementando il contatore degli errori.
+
+(3) Il ciclo termina quando l'ultima sequenza elabotata è "quit" (senza CH_TERM).
+
+Si tenga presente che:
+- per utilizzare le sequenze di caratteri ricevute come stringhe terminarle sempre con "\0";
+- dopo una caduta di connessione chiudere sempre il socket utilizzato per ricevere i dati.
